@@ -1,0 +1,28 @@
+name: Auto Commit
+
+on:
+  workflow_dispatch:  # 버튼 눌러 수동 실행
+  schedule:
+    - cron: "0 * * * *" # 매시간 실행
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Git User
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Make example change
+        run: |
+          echo "Last updated: $(date)" >> auto-update.txt
+
+      - name: Commit and Push
+        run: |
+          git add .
+          git commit -m "Auto update at $(date)" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/whdbqls/Github-Tutorial.git
